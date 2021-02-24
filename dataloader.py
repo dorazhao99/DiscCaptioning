@@ -14,7 +14,9 @@ import torch.utils.data as data
 import multiprocessing
 
 import glob
-import cPickle
+import pickle
+
+from functools import reduce
 
 class DataLoader(data.Dataset):
 

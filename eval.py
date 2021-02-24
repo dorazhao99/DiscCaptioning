@@ -7,7 +7,7 @@ import numpy as np
 
 import time
 import os
-from six.moves import cPickle
+import pickle
 
 import opts
 import models
@@ -90,8 +90,8 @@ opt = parser.parse_args()
 np.random.seed(123)
 
 # Load infos
-with open(opt.infos_path) as f:
-    infos = cPickle.load(f)
+with open(opt.infos_path, 'rb') as f:
+    infos = utils.pickle_load(f)
 
 # override and collect parameters
 if len(opt.input_fc_dir) == 0:

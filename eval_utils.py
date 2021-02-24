@@ -51,7 +51,8 @@ def language_eval(dataset, preds, model_id, split):
     
     imgToEval = cocoEval.imgToEval
     # collect SPICE_sub_score
-    for k in imgToEval.values()[0]['SPICE'].keys():
+    # print(imgToEval.values())
+    for k in list(imgToEval.values())[0]['SPICE'].keys():
         if k != 'All':
             out['SPICE_'+k] = np.array([v['SPICE'][k]['f'] for v in  imgToEval.values()])
             out['SPICE_'+k] = (out['SPICE_'+k][out['SPICE_'+k]==out['SPICE_'+k]]).mean()

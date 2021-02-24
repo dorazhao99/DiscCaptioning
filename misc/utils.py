@@ -10,14 +10,41 @@ import torch.nn as nn
 
 import skimage
 import skimage.io
-from scipy.misc import imresize
 import skimage.transform
+import cv2
 
 import torchvision
 
 import numpy as np
 import json
 from PIL import Image, ImageFont, ImageDraw
+
+import six
+from six.moves import cPickle
+
+
+def pickle_load(f):
+    """ Load a pickle.
+    Parameters
+    ----------
+    f: file-like object
+    """
+    if six.PY3:
+        return cPickle.load(f, encoding='latin-1')
+    else:
+        return cPickle.load(f)
+
+def pickle_dump(obj, f):
+    """ Dump a pickle.
+    Parameters
+    ----------
+    obj: pickled object
+    f: file-like object
+    """
+    if six.PY3:
+        return cPickle.dump(obj, f)
+    else:
+        return cPickle.dump(obj, f)
 
 def if_use_att(opt):
     # Decide if load attention feature according to caption model
@@ -82,7 +109,7 @@ def load_image(file_name, size = None):
         img = np.concatenate((img, img, img), axis=2)
 
     if size:
-        img = imresize(img, size)
+        img = cv2.resize(img, size)
 
     img = img.astype('float32') / 255.0
     img = torch.from_numpy(img.transpose([2,0,1]))
@@ -121,7 +148,7 @@ def var_wrapper(x, cuda=True):
 
 def load_state_dict(model, state_dict):
     model_state_dict = model.state_dict()
-    keys = set(model_state_dict.keys() + state_dict.keys())
+    keys = set(list(model_state_dict.keys()) + list(state_dict.keys()))
     for k in keys:
         if k not in state_dict:
             print('key %s in model.state_dict() not in loaded state_dict' %(k))
