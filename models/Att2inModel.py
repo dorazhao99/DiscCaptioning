@@ -1,3 +1,4 @@
+# This file comes from Luo et al.'s DiscCaptioning repository with some edits to convert from Python 2 to Python 3.7
 # This file contains att2in model
 # Att2in is from Self-critical Sequence Training for Image Captioning
 # https://arxiv.org/abs/1612.00563
