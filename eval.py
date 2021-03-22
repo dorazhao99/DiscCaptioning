@@ -1,3 +1,4 @@
+# This file comes from Luo et al.'s DiscCaptioning repository with some edits to convert from Python 2 to Python 3.7
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
