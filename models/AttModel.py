@@ -1,3 +1,4 @@
+# This file comes from Luo et al.'s DiscCaptioning repository with some edits to convert from Python 2 to Python 3.7
 # This file contains Att2in2, AdaAtt, AdaAttMO, TopDown model
 
 # AdaAtt is from Knowing When to Look: Adaptive Attention via A Visual Sentinel for Image Captioning
