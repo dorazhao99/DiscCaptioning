@@ -14,8 +14,6 @@ PyTorch 1.8.0 (along with torchvision)
 
 ### Clone the repository
 
-`git clone --recursive https://github.com/ruotianluo/DiscCaptioning.git`
-
 ### Data split
 
 In this paper we train on the COCO 2014 training set and evaluate on the COCO 2014 validation set. 
