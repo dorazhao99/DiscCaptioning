@@ -1,14 +1,14 @@
-# Discriminability objective for training descriptive captions
 
-This is the implementation of paper [**Discriminability objective for training descriptive captions**](http://openaccess.thecvf.com/content_cvpr_2018/papers/Luo_Discriminability_Objective_for_CVPR_2018_paper.pdf).
+# Discriminability objective for training descriptive captions
+This code is an adaptation of Luo et al.'s DiscCaptioning [repository](https://github.com/ruotianluo/DiscCaptioning), updated for Python 3. 
+
+This is the implementation of thepaper [**Discriminability objective for training descriptive captions**](http://openaccess.thecvf.com/content_cvpr_2018/papers/Luo_Discriminability_Objective_for_CVPR_2018_paper.pdf).
 
 
 ## Requirements
-Python 2.7 (because there is no [coco-caption](https://github.com/tylin/coco-caption) version for python 3)
+Python 3.7 (because there is no [coco-caption](https://github.com/tylin/coco-caption) version for python 3)
 
-PyTorch 1.0 (along with torchvision)
-
-java 1.8 for (coco-caption)
+PyTorch 1.8.0 (along with torchvision)
 
 ## Downloads
 
@@ -18,11 +18,9 @@ java 1.8 for (coco-caption)
 
 ### Data split
 
-In this paper we use the data split from [Context-aware Captions from Context-agnostic Supervision](https://arxiv.org/abs/1701.02870). It's different from standard karpathy's split, so we need to download different files.
+In this paper we train on the COCO 2014 training set and evaluate on the COCO 2014 validation set. 
 
 Download link: [Google drive link](https://drive.google.com/open?id=1Z9bfvkRT5YyikmNgzPbybezYj9mi4TE2)
-
-To train on your own, you only need to download `dataset_coco.json`, but it's also suggested to download `cocotalk.json` and `cocotalk_label.h5` as well. If you want to run pretrained model, you have to download all three files.
 
 ### coco-caption
 
@@ -53,7 +51,7 @@ To evaluate on pretrained model, run:
 
 The pretrained models can match the results shown in the paper.
 
-## Train on you rown
+## Train on your own
 
 ### Preprocessing 
 Preprocess the captions (skip if you already have 'cocotalk.json' and 'cocotalk_label.h5'):
@@ -84,20 +82,6 @@ Third, finetune the  captioning model with cider+discriminability optimization:
 
 ```bash
 bash eval.sh att_d1 test
-```
-
-## Citation
-
-If you found this useful, please consider citing:
-
-```
-@InProceedings{Luo_2018_CVPR,
-author = {Luo, Ruotian and Price, Brian and Cohen, Scott and Shakhnarovich, Gregory},
-title = {Discriminability Objective for Training Descriptive Captions},
-booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-month = {June},
-year = {2018}
-}
 ```
 
 ## Acknowledgements
