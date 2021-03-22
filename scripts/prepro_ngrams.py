@@ -1,14 +1,11 @@
 """
 Preprocess a raw json dataset into hdf5/json files for use in data_loader.lua
-
 Input: json file that has the form
 [{ file_path: 'path/img.jpg', captions: ['a caption', ...] }, ...]
 example element in this list would look like
 {'captions': [u'A man with a red helmet on a small moped on a dirt road. ', u'Man riding a motor bike on a dirt road on the countryside.', u'A man riding on the back of a motorcycle.', u'A dirt path with a young person on a motor bike rests to the foreground of a verdant area with a bridge and a background of cloud-wreathed mountains. ', u'A man in a red shirt and a red hat is on a motorcycle on a hill side.'], 'file_path': u'val2014/COCO_val2014_000000391895.jpg', 'id': 391895}
-
 This script reads this json, does some basic preprocessing on the captions
 (e.g. lowercase, etc.), creates a special UNK token, and encodes everything to arrays
-
 Output: a json file and an hdf5 file
 The hdf5 file contains several fields:
 /images is (N,3,256,256) uint8 array of raw image data in RGB format
@@ -16,7 +13,6 @@ The hdf5 file contains several fields:
 /label_start_ix and /label_end_ix are (N,) uint32 arrays of pointers to the 
   first and last indices (in range 1..M) of labels for each image
 /label_length stores the length of the sequence for each of the M sequences
-
 The json file has a dict that contains:
 - an 'ix_to_word' field storing the vocab in form {ix:'word'}, where ix is 1-indexed
 - an 'images' field that is a list holding auxiliary information for each image, 
@@ -27,6 +23,7 @@ import os
 import json
 import argparse
 from six.moves import cPickle
+import misc.utils as utils
 from collections import defaultdict
 
 def precook(s, n=4, out=False):
@@ -40,8 +37,8 @@ def precook(s, n=4, out=False):
   """
   words = s.split()
   counts = defaultdict(int)
-  for k in xrange(1,n+1):
-    for i in xrange(len(words)-k+1):
+  for k in range(1,n+1):
+    for i in range(len(words)-k+1):
       ngram = tuple(words[i:i+k])
       counts[ngram] += 1
   return counts
@@ -73,7 +70,7 @@ def compute_doc_freq(crefs):
   document_frequency = defaultdict(float)
   for refs in crefs:
     # refs, k ref captions of one image
-    for ngram in set([ngram for ref in refs for (ngram,count) in ref.iteritems()]):
+    for ngram in set([ngram for ref in refs for (ngram,count) in ref.items()]):
       document_frequency[ngram] += 1
       # maxcounts[ngram] = max(maxcounts.get(ngram,0), count)
   return document_frequency
@@ -93,6 +90,8 @@ def build_dict(imgs, wtoi, params):
       ref_words = []
       ref_idxs = []
       for sent in img['sentences']:
+        if hasattr(params, 'bpe'):
+          sent['tokens'] = params.bpe.segment(' '.join(sent['tokens'])).strip().split(' ')
         tmp_tokens = sent['tokens'] + ['<eos>']
         tmp_tokens = [_ if _ in wtoi else 'UNK' for _ in tmp_tokens]
         ref_words.append(' '.join(tmp_tokens))
@@ -109,15 +108,28 @@ def build_dict(imgs, wtoi, params):
 def main(params):
 
   imgs = json.load(open(params['input_json'], 'r'))
-  itow = json.load(open(params['dict_json'], 'r'))['ix_to_word']
+  dict_json = json.load(open(params['dict_json'], 'r'))
+  itow = dict_json['ix_to_word']
   wtoi = {w:i for i,w in itow.items()}
+
+  # Load bpe
+  if 'bpe' in dict_json:
+    import tempfile
+    import codecs
+    codes_f = tempfile.NamedTemporaryFile(delete=False)
+    codes_f.close()
+    with open(codes_f.name, 'w') as f:
+      f.write(dict_json['bpe'])
+    with codecs.open(codes_f.name, encoding='UTF-8') as codes:
+      bpe = apply_bpe.BPE(codes)
+    params.bpe = bpe
 
   imgs = imgs['images']
 
   ngram_words, ngram_idxs, ref_len = build_dict(imgs, wtoi, params)
 
-  cPickle.dump({'document_frequency': ngram_words, 'ref_len': ref_len}, open(params['output_pkl']+'-words.p','w'), protocol=cPickle.HIGHEST_PROTOCOL)
-  cPickle.dump({'document_frequency': ngram_idxs, 'ref_len': ref_len}, open(params['output_pkl']+'-idxs.p','w'), protocol=cPickle.HIGHEST_PROTOCOL)
+  utils.pickle_dump({'document_frequency': ngram_words, 'ref_len': ref_len}, open(params['output_pkl']+'-words.p','wb'))
+  utils.pickle_dump({'document_frequency': ngram_idxs, 'ref_len': ref_len}, open(params['output_pkl']+'-idxs.p','wb'))
 
 if __name__ == "__main__":
 

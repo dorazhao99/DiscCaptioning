@@ -27,6 +27,7 @@ parser.add_argument('--cnn_model', type=str,  default='resnet101',
                 help='resnet101, resnet152')
 parser.add_argument('--infos_path', type=str, default='',
                 help='path to infos to evaluate')
+parser.add_argument('--save_file', type=str, default='vis/vis.json')
 # Basic options
 parser.add_argument('--batch_size', type=int, default=0,
                 help='if > 0 then overrule, otherwise load from checkpoint.')
@@ -151,4 +152,4 @@ if lang_stats:
 
 if opt.dump_json == 1:
     # dump the json
-    json.dump(split_predictions, open('vis/vis.json', 'w'))
+    json.dump(split_predictions, open(opt.save_file, 'w'))

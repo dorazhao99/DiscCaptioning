@@ -292,9 +292,9 @@ class AttModel(nn.Module):
             if decoding_constraint and len(seq) > 0:
                 tmp = output.data.new(output.size(0), self.vocab_size + 1).zero_()
                 tmp.scatter_(1, seq[-1].data.unsqueeze(1), float('-inf'))
-                logprobs = F.log_softmax(self.logit(output)+Variable(tmp))
+                logprobs = F.log_softmax(self.logit(output)+Variable(tmp), dim=1)
             else:
-                logprobs = F.log_softmax(self.logit(output))
+                logprobs = F.log_softmax(self.logit(output), dim=1)
 
         return torch.cat([_.unsqueeze(1) for _ in seq], 1), torch.cat([_.unsqueeze(1) for _ in seqLogprobs], 1)
 
